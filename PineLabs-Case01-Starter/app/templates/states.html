@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block title %}State model{% endblock %}
+{% block content %}<div class="intro"><div><p class="context">Workflow reference</p><h1>State model</h1><p>Rows show the current state and columns show the destination. Each allowed transition names its trigger. A case enters ACTIVE when the worker records its issuer receipt.</p></div></div>
+<div class="panel scroll"><table class="matrix"><thead><tr><th>From / to</th>{% for s in states %}<th>{{ s }}</th>{% endfor %}</tr></thead><tbody>
+{% for s in states %}<tr><th>{{ s }}</th>{% for target in states %}{% set cell = edges[s].get(target) %}<td class="{{ 'allowed' if cell else 'none' }}">{{ cell or '—' }}</td>{% endfor %}</tr>{% endfor %}
+</tbody></table></div>{% endblock %}

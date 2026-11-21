@@ -1,0 +1,43 @@
+{% from "components.html" import icon %}
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light"><meta name="theme-color" content="#f7f7f5">
+<title>{% block title %}Merchant onboarding{% endblock %} · Pine Labs Case 01</title>
+<link rel="icon" href="/static/pinelabs-logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/app.css"><script defer src="/static/app.js"></script>
+</head>
+{% set here = request.url.path if request else '' %}
+{% set ops = (authorized|default(false) and here in ['/desk','/metrics']) or (operator|default(false) and data is defined) %}
+{% set case_page = data is defined and data.id is defined %}
+{% set area = 'Review queue' if here == '/desk' else 'Metrics' if here == '/metrics' else 'Case ' ~ data.id[:8] if case_page else '' %}
+<body class="{{ 'operations' if ops else 'portal' }}{% if here == '/' or here.endswith('/edit') %} intake-page{% elif case_page %} case-page{% endif %}">
+<a class="skip" href="#main">Skip to content</a>
+{% if ops %}
+<aside class="sidebar" id="operator-navigation" aria-label="Operator navigation">
+  <a class="side-brand" href="/desk"><img src="/static/pinelabs-logo.svg" alt="Pine Labs" width="99" height="34"></a>
+  <div class="side-nav"><p class="rail-label">Operations</p>
+  <nav aria-label="Operations">
+    <a href="/desk"{% if here == '/desk' %} aria-current="page"{% endif %}>{{ icon('queue') }}Review queue{% if queues is defined and queues.operator %}<b>{{ queues.operator }}</b>{% endif %}</a>
+    {% if case_page %}<a href="/cases/{{ data.id }}" aria-current="page">{{ icon('file') }}Case details</a>{% endif %}
+    <a href="/metrics"{% if here == '/metrics' %} aria-current="page"{% endif %}>{{ icon('chart') }}Metrics</a>
+    <a href="/">{{ icon('user') }}Merchant view</a>
+  </nav><p class="rail-label">Reference</p><nav aria-label="Reference"><a href="/state-model">{{ icon('layers') }}State model</a></nav>
+  </div><div class="side-profile"><b class="avatar">OP</b><span>Operator view<small>Case Study 01 · Demo</small></span></div>
+</aside>
+<header class="workspace-bar">
+  <button class="menu-toggle" type="button" aria-label="Toggle operator navigation" aria-controls="operator-navigation" aria-expanded="false">{{ icon('menu') }}</button>
+  <div class="crumbs"><a href="/desk">Merchant onboarding</a><span aria-hidden="true">›</span><strong>{{ area }}</strong></div>
+  <div class="workspace-tools"><a class="search-shortcut" href="/desk#desk-search">{{ icon('search') }}Find an application</a><span class="avatar" aria-label="Operator">OP</span></div>
+</header>
+{% else %}
+<header class="merchant-nav"><div class="merchant-bar">
+  <a class="brand" href="/" aria-label="Pine Labs merchant onboarding"><img src="/static/pinelabs-logo.svg" alt="Pine Labs" width="93" height="32"></a>
+  <span class="demo-badge">Case Study 01 · Demo</span>
+  <nav aria-label="Main"><a href="/"{% if here == '/' %} aria-current="page"{% endif %}>Apply</a>
+  {% if case_page %}<a href="/cases/{{ data.id }}" aria-current="page">Track application</a>{% elif case is defined and case %}<a href="/cases/{{ case }}">Track application</a>{% elif here == '/' %}<a id="last-application" href="/" hidden>Track application</a>{% endif %}
+  <a class="portal-link" href="/desk">Operator desk {{ icon('arrow') }}</a></nav>
+</div></header>
+{% endif %}
+<main id="main" class="{{ 'workspace' if ops else 'merchant-space' }}">{% block content %}{% endblock %}</main>
+<footer class="site-footer"><span>Pine Labs merchant onboarding</span><span>Independent Case Study 01 demo · Synthetic data</span><a href="/state-model">State model</a></footer>
+</body></html>

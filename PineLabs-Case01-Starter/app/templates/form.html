@@ -1,0 +1,52 @@
+{% extends "base.html" %}{% from "components.html" import icon %}
+{% block title %}{{ 'Update your application' if case else 'Merchant application' }}{% endblock %}
+{% block content %}
+{% set DOCS = [('identity','Identity document','Business identity and PAN','id'),('tax','Tax (GST) registration','GST registration evidence','file'),('bank','Bank account document','Account and routing details','bank')] %}
+{% macro field(name, label, wide=false) %}<label{% if wide %} class="wide"{% endif %}>{{ label }}<input name="{{ name }}" value="{{ merchant[name] }}" required autocomplete="off" spellcheck="false" maxlength="80"></label>{% endmacro %}
+<div class="intake-layout">
+<aside class="editorial"><p class="editorial-kicker">Merchant onboarding /<br>Pine Labs</p>
+<div class="editorial-copy"><h2>Your<br> business.<br> Your next<br> <em>big move.</em></h2><p>From your first document to your Merchant ID, follow every step of your application.</p></div>
+<div class="editorial-art" aria-hidden="true"><i></i><b></b></div>
+<div class="editorial-foot">{{ icon('shield') }}<span>Synthetic merchant onboarding<br>Case Study 01</span></div></aside>
+<div class="intake-card">
+<nav class="intake-steps" aria-label="Application sections"><a href="#business" aria-current="step"><b>1</b>Your details</a><i></i><a href="#uploads"><b>2</b>Documents</a><i></i><a href="#submission"><b>3</b>Submit</a></nav>
+<header class="form-heading"><h1>{{ 'Update your application' if case else 'Let’s get your business verified.' }}</h1>
+<p>{{ 'Correct your details or replace a document, then save your changes.' if case else 'One application for identity, tax and bank verification.' }}</p></header>
+{% if case and requests %}<section class="notice-box" aria-label="What we need from you"><h2>What we need from you</h2><ul class="needs-list">{% for r in requests %}<li><strong>{{ r.title }}</strong><span>{{ r.why }} {{ r.merchant }}</span></li>{% endfor %}</ul></section>{% endif %}
+<form id="intake" data-case="{{ case or '' }}" data-key="{{ submission_key or '' }}" data-revision="{{ revision or '' }}">
+<section class="form-section" id="business"><h2><span class="icon-box">{{ icon('building') }}</span>Business information</h2>
+<div class="field-grid">{{ field('name','Legal business name') }}
+<label>Business category<select name="category">{% for option in ['RETAIL','SERVICES','WHOLESALE'] %}<option value="{{ option }}" {{ 'selected' if merchant.category == option }}>{{ option|title }}</option>{% endfor %}</select></label>
+<label>Postal zone<select name="zone">{% for option in ['SYNZONE-01','SYNZONE-02','SYNZONE-03'] %}<option {{ 'selected' if merchant.zone == option }}>{{ option }}</option>{% endfor %}</select></label>
+{{ field('pan','PAN') }}{{ field('gst','GST number',true) }}</div></section>
+<section class="form-section"><h2><span class="icon-box">{{ icon('bank') }}</span>Settlement bank</h2>
+<div class="field-grid">{{ field('account','Bank account number') }}{{ field('routing','Bank routing / IFSC') }}</div></section>
+<section class="form-section"><div class="section-line"><h2><span class="icon-box">{{ icon('upload') }}</span>Upload your documents</h2><small>PDF, JPG, PNG · 2 MiB per file</small></div>
+<div class="doc-cards" id="uploads" data-case="{{ case or '' }}" data-revision="{{ revision or '' }}">
+{% for kind, title, help, glyph in DOCS %}{% set row = doc_rows[kind] if doc_rows else None %}
+<div class="doc-card" data-kind="{{ kind }}"><span class="icon-box">{{ icon(glyph) }}</span><h3>{{ title }}</h3><p class="hint">{{ help }}</p>
+{% if row %}<p class="doc-status"><span class="chip chip-{{ {'ok':'ok','info':'run','wait':'wait'}[row.tone] }}">{{ row.label }}</span><small>{{ row.note }}</small></p>{% endif %}
+<div class="dropzone"><label for="file-{{ kind }}">{{ icon('upload') }}{{ 'Replace with a file' if row and row.source != 'missing' else 'Choose a file' }}</label>
+<input id="file-{{ kind }}" type="file" data-kind="{{ kind }}" accept="image/png,image/jpeg,application/pdf,.png,.jpg,.jpeg,.pdf" aria-describedby="note-{{ kind }}">
+<p class="file-note" id="note-{{ kind }}" aria-live="polite"></p></div>
+<label class="check-line"><input type="checkbox" class="use-typed" data-kind="{{ kind }}" {{ 'checked' if (row and row.source == 'typed' and not row.differs) or (not case and kind in documents) }}>No file? Use the details above as this document</label></div>
+{% endfor %}</div>
+<details class="advanced"><summary>Advanced · edit the structured document details (JSON)</summary>
+<p class="hint">For testers. These fields are filled from the details above when you tick “Use the details above”. Edit them to give a document values that differ from the form, which is how the demo conflict scenarios work. An empty document is recorded as missing.</p>
+<div class="documents">
+{% for kind, title, help, glyph in DOCS %}{% set row = doc_rows[kind] if doc_rows else None %}
+<div class="doc"><label for="doc-{{ kind }}">{{ title }} (details)</label>
+<textarea id="doc-{{ kind }}" data-document="{{ kind }}"{% if row and (row.source == 'file' or row.differs) %} data-custom="1"{% endif %} rows="6" spellcheck="false" placeholder="No document supplied">{% if kind in documents %}{{ documents[kind]|tojson(indent=2) }}{% endif %}</textarea>
+<button class="secondary sample" type="button" data-target="doc-{{ kind }}" data-sample='{{ samples[kind]|tojson }}'>Use {{ kind }} sample</button></div>
+{% endfor %}</div></details>
+</section>
+<div class="submit-line" id="submission"><small>{{ icon('shield') }} Use synthetic details only</small><button class="primary" type="submit">{{ 'Save changes' if case else 'Submit application' }} {{ icon('arrow') }}</button></div>
+{% if case %}<a class="back-case" href="/cases/{{ case }}">Back to my application</a>{% endif %}
+<ol class="progress-list" id="progress" aria-live="polite" hidden></ol><p class="error" role="alert" id="message"></p><p class="error" role="alert" id="upload-message"></p>
+<noscript>Enable JavaScript to submit your application.</noscript></form></div>
+<aside class="intake-guide" aria-label="What happens next"><section class="guide-process"><p class="eyebrow">The process</p><h2>Simple to apply.<br>Easy to follow.</h2>
+<ol>{% for title,desc in [('Tell us about your business','Enter identity and bank details.'),('Upload your evidence','Add clear documents for extraction.'),('Track every check','Follow progress and respond to a request.'),('Receive a Merchant ID','Issued once approval is complete.')] %}<li><b>{{ loop.index }}</b><div><strong>{{ title }}</strong><small>{{ desc }}</small></div></li>{% endfor %}</ol></section>
+<section class="guide-note"><h2>Before you submit</h2><p>Use the fictional details provided. Your documents should match the business and bank information on the form.</p>
+{% if scenarios %}<details class="demo" id="demo-panel"><summary><h2>Try a demo scenario <small style="display:inline">(optional)</small></h2></summary><p>Choose a synthetic case to fill in the form and its supporting evidence.</p>
+<label>Scenario<select id="scenario" data-scenarios='{{ scenarios|tojson }}'><option value="">Default sample (identity and bank details typed, tax document missing)</option>
+{% for s in scenarios %}<option value="{{ s.slug }}">{{ s.label }}</option>{% endfor %}</select></label><p id="story" class="story"></p></details>{% endif %}</section></aside></div>{% endblock %}

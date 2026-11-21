@@ -1,0 +1,63 @@
+{% extends "base.html" %}{% from "components.html" import icon, stat %}{% block title %}Metrics{% endblock %}
+{% block content %}{% set LABEL = {'NEEDS_INFO':'Needs info','IN_REVIEW':'In review','VERIFYING':'Verifying','APPROVED_PENDING_MID':'Issuing ID','PROVISIONING_FAILED':'Recovery','ACTIVE':'Active','REJECTED':'Rejected'} %}
+<div class="page-heading"><div><p class="eyebrow">Operations / Intelligence</p><h1>Operational pulse.</h1><p>Application outcomes, verification times and system health.</p></div>
+{% if authorized %}<nav class="windows" aria-label="Time window">{% for w in windows %}<a href="/metrics?window={{ w }}"{% if w == window %} aria-current="true"{% endif %}>{{ {'all':'All time','1h':'Last hour','24h':'Last 24 hours'}[w] }}</a>{% endfor %}</nav>{% endif %}</div>
+{% if not authorized %}<section class="panel"><h2>Operator access required</h2><p>Open the private operator link from your launcher to see operational metrics.</p></section>
+{% elif m.empty %}<div class="panel empty"><strong>No applications in {{ m.window.label }}</strong>Submit an application or choose a wider window.</div>
+{% else %}{% set o=m.outcomes %}{% set x=m.exceptions %}{% set d=m.durations %}{% set w=m.workload %}{% set r=m.reliability %}
+<div class="kpis">{{ stat('Total applications',m.cohort,'Submitted in this period','grid') }}{{ stat('Active merchants',o.active,'Merchant ID issued','id') }}{{ stat('Needs operator review',w.queues.operator.cases,'Action required now','alert',true) }}{{ stat('In verification',w.verifying_cases,'Waiting for provider checks','clock') }}</div>
+<div class="analytics-grid"><section class="panel distribution"><div class="section-line"><h2>Applications by status</h2><span class="tag">Selected cohort</span></div><p class="hint">Current state of applications submitted in {{ m.window.label }}.</p>
+{% set chart_states=['ACTIVE','VERIFYING','IN_REVIEW','NEEDS_INFO','APPROVED_PENDING_MID','PROVISIONING_FAILED','REJECTED'] %}
+{% set peak=(m.status_distribution.values()|max) or 1 %}
+<div class="column-chart" role="list" aria-label="Applications by status">{% for s in chart_states %}{% set n=m.status_distribution.get(s,0) %}<div class="column" role="listitem" aria-label="{{ LABEL[s] }}: {{ n }}"><div class="column-well"><div class="column-fill c-{{ s }}" style="height:{{ n * 100 / peak }}%"><b>{{ n }}</b></div></div><span>{{ LABEL[s] }}</span></div>{% endfor %}</div>
+<small class="observation">Observed {{ m.window.observed_at|utc }}</small></section>
+<section class="panel"><div class="section-line"><h2>Case outcomes</h2><a href="#definitions">Definitions {{ icon('arrow') }}</a></div><dl class="number-list">
+<dt>Approval rate<small>{{ o.approved }} of {{ m.cohort }} applications</small></dt><dd>{{ o.approval_rate|pct }}</dd>
+<dt>Decided approval share<small>{% if o.approved + o.rejected %}{{ o.approved }} of {{ o.approved + o.rejected }} decided{% else %}Nothing decided yet{% endif %}</small></dt><dd>{{ o.decided_approval_share|pct }}</dd>
+<dt><span>Exception rate</span><small>{{ x.cases }} of {{ m.cohort }} held at least once</small></dt><dd>{{ x.rate|pct }}</dd>
+<dt>Rejected<small>In the selected cohort</small></dt><dd>{{ o.rejected }}</dd></dl></section>
+<section class="panel"><div class="section-line"><h2>Verification response times</h2><small>Mean per provider</small></div>
+{% set times=d.provider_latency %}{% if times %}{% set longest=(times.values()|map(attribute='mean')|max) or 1 %}<div class="status-bars">{% for kind,sample in times.items() %}<div><div><span>{{ kind }} verification</span><strong>{{ sample.mean|dur }}</strong></div><div class="track"><i style="width:{{ 100*sample.mean/longest }}%"></i></div></div>{% endfor %}</div>{% else %}<p class="empty-small">Waiting for the first provider response.</p>{% endif %}</section>
+<section class="panel"><div class="section-line"><h2>Operational health</h2><span class="icon-box">{{ icon('pulse') }}</span></div><dl class="number-list compact">
+<dt>Retry attempts</dt><dd>{{ r.retries }}</dd><dt>Duplicate callbacks acknowledged</dt><dd>{{ r.duplicate_receipts }}</dd><dt>Dead-lettered jobs</dt><dd>{{ w.dead_lettered }}</dd>
+<dt>Submission to Merchant ID <small>Median across {{ d.submission_to_active.n }} issued</small></dt><dd>{{ d.submission_to_active.median|dur }}</dd></dl></section></div>
+<section class="panel analysis-more"><h2>Processing detail</h2>
+<details><summary>Time in state and workload</summary><section class="report-section"><h2>Time in state</h2>
+{% if m.time_in_state %}{% if m.bottleneck and m.bottleneck.state %}<p class="notice"><strong>Bottleneck:</strong> applications spend the most time in <strong>{{ m.bottleneck.state }}</strong> ({{ m.bottleneck.share|pct }} of non-final time){% if m.bottleneck.human_wait %}. That is a human wait, not a system delay{% endif %}.{% if m.bottleneck.slowest_provider %} The slowest provider is {{ m.bottleneck.slowest_provider }} at {{ m.bottleneck.slowest_provider_mean|dur }} on average.{% endif %}</p>{% endif %}
+<ul class="bars" aria-label="Share of non-final time by state">{% for s in state_order %}{% if s in m.time_in_state and m.time_in_state[s].share is not none %}{% set v = m.time_in_state[s] %}<li><span title="{{ s }}">{{ LABEL.get(s, s) }}</span><span class="bar-track"><span class="bar-fill info" style="width: {{ (v.share * 100)|round(1) }}%"></span></span><strong>{{ v.share|pct }}</strong></li>{% endif %}{% endfor %}</ul>
+<div class="scroll" style="margin-top: 1rem"><table><thead><tr><th>State</th><th>Applications</th><th>Visits</th><th>Total time</th><th>Mean per application</th><th>Median visit</th><th>Still in state</th></tr></thead><tbody>
+{% for s in state_order %}{% if s in m.time_in_state %}{% set v = m.time_in_state[s] %}<tr><td><span class="state s-{{ s }}">{{ s }}</span></td><td>{{ v.cases }}</td><td>{{ v.visits }}</td><td>{{ v.total|dur }}</td><td>{{ v.mean_per_case|dur }}</td><td>{{ v.median_per_visit|dur }}</td><td>{{ v.open_cases }}</td></tr>{% endif %}{% endfor %}
+</tbody></table></div><p><small>Visits can exceed applications because a case can return to a state. Open time runs to the observation time. Time stops at ACTIVE and REJECTED.</small></p>
+{% else %}<p>No state history yet.</p>{% endif %}</section>
+<div class="cols">
+<section class="report-section"><h2>Workload right now</h2>
+<div class="scroll"><table><tbody>
+<tr><td>Applications in verification</td><td><strong>{{ w.verifying_cases }}</strong></td></tr>
+<tr><td>Provider checks outstanding</td><td><strong>{{ w.pending_attempts.values()|sum }}</strong>{% if w.pending_attempts %}<small>{% for k, n in w.pending_attempts.items() %}{{ k }} {{ n }}{{ ' · ' if not loop.last }}{% endfor %}</small>{% endif %}</td></tr>
+<tr><td>Operator review queue</td><td><strong>{{ w.queues.operator.cases }}</strong>{% if w.queues.operator.cases %}<small>oldest waiting {{ w.queues.operator.oldest|dur }}, median {{ w.queues.operator.median|dur }}</small>{% endif %}</td></tr>
+<tr><td>Waiting on merchants</td><td><strong>{{ w.queues.merchant.cases }}</strong>{% if w.queues.merchant.cases %}<small>oldest waiting {{ w.queues.merchant.oldest|dur }}</small>{% endif %}</td></tr>
+<tr><td>Approved, issuing Merchant ID</td><td><strong>{{ w.approved_awaiting_mid }}</strong></td></tr>
+<tr><td>Issuance needing recovery</td><td><strong>{{ w.provisioning_failed }}</strong></td></tr>
+<tr><td>Dead-lettered jobs</td><td><strong>{{ w.dead_lettered }}</strong></td></tr>
+</tbody></table></div></section>
+<section class="report-section"><h2>Processing durations</h2>
+<div class="scroll"><table><thead><tr><th>Step</th><th>Count</th><th>Median</th><th>90th percentile</th></tr></thead><tbody>
+<tr><td>Submission to approval</td><td>{{ d.submission_to_approval.n }}</td><td>{{ d.submission_to_approval.median|dur }}</td><td>{{ d.submission_to_approval.p90|dur }}</td></tr>
+<tr><td>Approval to Merchant ID</td><td>{{ d.approval_to_mid.n }}</td><td>{{ d.approval_to_mid.median|dur }}</td><td>{{ d.approval_to_mid.p90|dur }}</td></tr>
+{% for kind, v in d.provider_latency.items() %}<tr><td>{{ kind }} reply time</td><td>{{ v.n }}</td><td>{{ v.median|dur }}</td><td>{{ v.p90|dur }}</td></tr>{% endfor %}
+</tbody></table></div></section>
+</div>
+</details>
+<details><summary>Reliability and exception history</summary>{% set r = m.reliability %}
+<section class="report-section"><h2>Reliability</h2>
+<div class="tiles">
+  <div class="tile {{ 'attention' if r.timeout_rate }}"><div class="label">Timeout rate</div><div class="value">{{ r.timeout_rate|pct }}</div><div class="note">Attempts that timed out of those that were answered or timed out</div></div>
+  <div class="tile"><div class="label">Retries</div><div class="value">{{ r.retries }}</div><div class="note">Attempts beyond the first for a check</div></div>
+  <div class="tile"><div class="label">Duplicate callbacks acknowledged</div><div class="value">{{ r.duplicate_receipts }}</div><div class="note">Replays recorded without a business effect</div></div>
+  <div class="tile {{ 'bad' if r.rejected_callbacks }}"><div class="label">Rejected callback requests</div><div class="value">{{ r.rejected_callbacks }}</div><div class="note">Whole run, not scoped to the window: bad signature, schema or unknown attempt. A signed reuse of an event ID with a different body is a conflict on its case, not counted here</div></div>
+</div>
+<p class="hint">Provider attempts: {% for s, n in r.attempts.items() %}{{ s }} {{ n }}{{ ' · ' if not loop.last }}{% else %}none yet{% endfor %}</p></section>
+
+<h3>Why applications were held</h3>{% if x.by_cause %}<dl class="number-list compact">{% for cause,n in x.by_cause.items() %}<dt>{{ cause|replace('_',' ')|lower|capitalize }}</dt><dd>{{ n }}</dd>{% endfor %}</dl>{% else %}<p>No recorded exceptions in this cohort.</p>{% endif %}</details>
+<details id="definitions"><summary>How these numbers are defined</summary><ul class="defs">{% for line in m.definitions %}<li>{{ line }}</li>{% endfor %}</ul></details></section>
+{% endif %}{% endblock %}

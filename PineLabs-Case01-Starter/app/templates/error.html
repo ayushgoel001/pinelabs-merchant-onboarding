@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block title %}{{ status }}{% endblock %}
+{% block content %}<section class="errorpage"><div class="code">{{ status }}</div>
+<h1>{{ headline }}</h1><p class="lead" style="margin: 0 auto">{{ message }}</p>
+<p class="actions" style="justify-content:center;margin-top:1.2rem"><a class="primary" href="/">New application</a><a class="secondary" href="/desk" style="margin-top:0">Operator desk</a>{% if refresh %}<a class="secondary" href="{{ refresh }}" style="margin-top:0">Open the current case</a>{% endif %}</p></section>{% endblock %}

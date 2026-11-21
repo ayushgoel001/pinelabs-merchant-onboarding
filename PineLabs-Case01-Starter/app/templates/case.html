@@ -1,0 +1,114 @@
+{% extends "base.html" %}{% from "components.html" import icon %}{% from "decision_form.html" import decision_form %}
+{% block title %}{{ 'Case review' if operator else 'Track application' }}{% endblock %}
+{% block content %}
+{% set M = data.merchant %}
+{% set status_name = {'NEEDS_INFO':'Waiting for your update','VERIFYING':'Verification in progress','IN_REVIEW':'Under review','APPROVED_PENDING_MID':'Approved','PROVISIONING_FAILED':'Issuance in recovery','ACTIVE':'Merchant ID issued','REJECTED':'Application closed'} %}
+{% set can_change = can_edit and not operator %}
+{% macro progress(vertical=false) %}
+<section class="panel {{ 'journey-card' if vertical else 'tracker-card' }}" aria-label="Progress">
+{% if vertical %}<div class="section-line"><h2>Your journey</h2><span class="tag">Revision {{ data.data_revision }}</span></div>{% endif %}
+<ol class="stepper {{ 'vertical' if vertical else 'horizontal' }}">{% for s in view.steps %}<li class="step" data-status="{{ s.status }}"><span class="node" aria-hidden="true">{% if s.status == 'done' %}{{ icon('check') }}{% elif s.status == 'bad' %}×{% else %}{{ loop.index }}{% endif %}</span><div><strong>{{ s.label }}<span class="sr-only"> ({{ s.status }})</span></strong>{% if s.note or vertical %}<small>{{ s.note or ('Application received' if loop.first else 'Awaiting the next step') }}</small>{% endif %}</div></li>{% endfor %}</ol>
+{% if vertical %}<div class="journey-meta"><small>Application ID<strong>{{ data.id[:10] }}</strong></small><small>Current revision<strong>Revision {{ data.data_revision }}</strong></small></div>{% endif %}</section>
+{% endmacro %}
+{% if operator %}
+<div class="page-heading"><div><p class="eyebrow">Case review / {{ data.id[:8] }}</p><h1>{{ 'Review this application.' if not data.approval else 'Application decision.' }}</h1></div><a class="outline-link" href="/desk">{{ icon('back') }} Back to queue</a></div>
+<header class="identity-panel panel" id="case-root" data-pending="{{ 1 if data.pending else 0 }}"><span class="identity-mark">{{ icon('building') }}</span>
+<div><h2>{{ M.name }}</h2><p>{{ M.category|title }} · {{ M.zone }} · PAN {{ M.pan|masked }}</p></div><div class="identity-status"><span class="state raw-state">{{ data.state }}</span><span class="state-pill s-{{ data.state }}">{{ 'Decision needed' if view.operator_owned else status_name[data.state] }}</span><small>Revision {{ data.data_revision }}{% if data.events %} · submitted {{ data.events[0].at|ago }}{% endif %}</small>
+{% if can_edit %}<a href="/cases/{{ data.id }}/edit">Amend evidence</a>{% endif %}</div></header>
+{{ progress() }}
+{% else %}
+<header class="tracking-hero" id="case-root" data-pending="{{ 1 if data.pending else 0 }}"><div><p class="eyebrow">Application / {{ M.name }}</p>
+<h1>{{ {'NEEDS_INFO':'One more thing, and we’re on our way.','IN_REVIEW':'Your application is in review.','VERIFYING':'Your checks are underway.','ACTIVE':'Your merchant account is ready.','APPROVED_PENDING_MID':'Your application is approved.','PROVISIONING_FAILED':'Your Merchant ID is on its way.','REJECTED':'Your application has been closed.'}[data.state] }}</h1>
+<p>{{ view.merchant_headline }}.{% if view.summary.detail %} {{ view.summary.detail }}{% endif %}</p></div><div class="hero-status"><span class="state raw-state">{{ data.state }}</span>
+{% if can_change %}<a class="state-pill s-{{ data.state }}" href="/cases/{{ data.id }}/edit">{{ status_name[data.state] }} {{ icon('arrow') }}</a>{% else %}<span class="state-pill s-{{ data.state }}">{{ status_name[data.state] }}</span>{% endif %}</div></header>{% endif %}
+<div class="{{ 'review-layout' if operator else 'tracking-layout' }}"><div class="case-main">
+{% if not operator %}<div class="overview panel"><div class="section-line"><h2>Application overview</h2><span class="tag">Case {{ data.id[:8] }}</span></div>{% endif %}
+{% set dead = data.issuance and data.issuance.status == 'DEAD_LETTERED' %}
+<section class="panel callout {{ 'decide' if (view.operator_owned or dead) and operator else ('' if data.issues or dead else 'ok') }}" id="action"><p class="eyebrow">{{ 'Human review required' if operator and view.operator_owned else ('Action required' if data.state == 'NEEDS_INFO' else 'Application status') }}</p><h2>{{ ('Decision needed' if view.operator_owned else 'Next step') if operator else ('What we need from you' if data.issues|selectattr('owner', 'equalto', 'MERCHANT')|list else 'Where things stand') }}</h2>
+{% for issue in data.issues %}{% set ex = view.explain[issue.id] %}
+<div class="action-card" data-owner="{{ issue.owner }}">{% if data.issues|length > 1 %}<p class="eyebrow">Issue {{ loop.index }} of {{ data.issues|length }}</p>{% endif %}<div class="action-head"><h3>{{ ex.title }}</h3><span class="owner" data-owner="{{ issue.owner }}">{% if issue.owner == 'OPERATOR' %}{{ 'You decide' if operator else 'Our review team' }}{% elif issue.owner == 'MERCHANT' %}{{ 'Waiting on the merchant' if operator else 'You' }}{% else %}Automatic{% endif %}</span></div>
+{% if ex.why %}<p>{{ ex.why }}</p>{% endif %}
+<p class="todo">{% if operator and issue.cause in ['UPLOAD_PENDING', 'UPLOAD_FAILED'] %}<strong>Waiting on the merchant:</strong> {{ ex.operator }}{% elif operator and issue.owner == 'MERCHANT' %}<strong>Waiting on the merchant:</strong> they have been asked to respond. There is nothing for you to decide until they do.{% else %}<strong>{{ 'What happens next' if operator else 'What to do' }}:</strong> {{ ex.operator if operator else ex.merchant }}{% endif %}</p>
+
+{% if operator and issue.actions %}<div class="decisions" role="group" aria-label="Decisions for: {{ ex.title }}">{% for action in issue.actions %}
+{{ decision_form('/api/cases/' ~ data.id ~ '/issues/' ~ issue.id ~ '/decisions', action,
+                 {'action': action, 'version': issue.version}, labels, reasons) }}
+{% endfor %}</div><p class="hint">Your decision and reason will appear in the case history.</p>{% endif %}
+<details class="issue-record"><summary>Issue record</summary><p class="tech">Technical: {{ ex.technical }}{% if operator %} · {{ issue.owner|title }} owns this issue · version {{ issue.version }}{% if issue.cause == 'DUPLICATE_CANDIDATE' %} · <a href="/cases/{{ issue.subject[10:] }}">open matched case</a>{% endif %}{% endif %}</p></details></div>
+{% else %}<p>{% if data.mid %}Merchant ID issued. The case is active.{% elif dead %}{{ 'Issuing the Merchant ID failed three times. Requeue it from the Merchant ID panel once the issuer is available; it keeps the same operation key, so no second ID is created.' if operator else 'Your application is approved. Creating your Merchant ID needs our operations team; nothing is needed from you.' }}{% elif data.issuance %}The application is approved. The Merchant ID is being issued; follow it in the Merchant ID panel.{% elif data.state == 'REJECTED' %}Application rejected. The decision is in the case history.{% elif data.pending %}Waiting for provider callbacks. This page refreshes while requests are outstanding.{% else %}No open issue.{% endif %}</p>{% endfor %}{% if not operator and can_edit %}<a class="primary" href="/cases/{{ data.id }}/edit">Update my application {{ icon('arrow') }}</a>{% endif %}</section>
+
+<section class="panel verification-panel" id="verification"><div class="section-line"><h2>Verification at a glance</h2><a href="#attempts">View details {{ icon('arrow') }}</a></div>
+<div class="checks">{% for c in view.checks %}<div class="check" data-tone="{{ c.tone }}" data-result="{{ c.status or '' }}"><h3>{{ {'PAN':'PAN identity','GST':'GST registration','BANK':'Bank account','RISK':'Risk screening'}.get(c.kind,c.kind) }}</h3><p>{{ c.plain }}</p><span class="chip chip-{{ c.tone }}">{{ c.word }}</span></div>{% endfor %}</div></section>
+{% if not operator %}</div>{% endif %}
+<section class="panel technical" id="technical"><h2>Technical details</h2>
+<p class="hint">Evidence, provider replies and the decisions recorded on this case.</p>
+<details id="evidence"><summary>Field-by-field evidence</summary><div class="scroll"><table class="responsive"><thead><tr><th>Source / field</th><th>Extracted</th><th>Compared with</th><th>Validation</th><th>Basis</th></tr></thead><tbody>
+{% for f in data.fields %}<tr><td data-label="Field"><strong>{{ f.document|title }} · {{ f.label }}</strong><small>{{ 'Revision ' ~ f.source_revision if f.source_revision else 'Awaiting document' }}</small></td>
+<td data-label="Extracted">{{ f.actual|masked or '—' }}</td><td data-label="Compared with">{{ f.expected|masked or '—' }}</td><td data-label="Validation"><span class="pill {{ f.status }}">{{ f.status }}</span></td><td data-label="Basis">{{ f.method }}{% if f.score is not none %} · {{ f.score }}%{% endif %}
+{% if f.source == 'OCR' and f.confidence is not none %}<small class="conf"><meter min="0" max="100" low="{{ f.threshold }}" optimum="100" value="{{ f.confidence }}" aria-label="OCR confidence"></meter> OCR confidence {{ f.confidence }} (review below {{ f.threshold }})</small>{% endif %}</td></tr>{% endfor %}
+</tbody></table></div></details>
+<details id="attempts"><summary>Verification attempts</summary><p>Policy requires {{ data.policy.required|join(', ') }}. Each attempt is one request for one input revision. The deadline starts when the request is sent.</p>
+{% if data.attempts %}<div class="scroll"><table class="responsive"><thead><tr><th>Check</th><th>Status</th><th>Sent · deadline</th><th>Settled</th><th>Result</th><th>Provider reference</th></tr></thead><tbody>
+{% for a in data.attempts %}<tr class="{{ '' if a.input_revision == a.current_revision else 'stale' }}"><td data-label="Check"><strong>{{ a.kind }}</strong><small>Input revision {{ a.input_revision }} · attempt {{ a.generation }}{% if a.input_revision != a.current_revision %} · superseded inputs{% endif %}</small></td>
+<td data-label="Status"><span class="pill a-{{ a.status }}">{{ a.status }}</span>{% if a.status == 'SCHEDULED' %}<small>{{ 'Paused by hold' if a.job_status == 'HELD' else 'Queued for ' ~ (a.due_at|clock) }}</small>{% endif %}</td>
+<td data-label="Sent">{{ a.sent_at|clock }}<small>{{ 'Deadline ' ~ (a.deadline|clock) if a.deadline else '' }}</small></td>
+<td data-label="Settled">{{ a.settled_at|clock }}</td>
+<td data-label="Result">{{ a.reason_code or '—' }}{% if a.name_score is not none %}<small>Registered beneficiary score {{ a.name_score }}%</small>{% endif %}{% if a.job_status == 'DEAD' %}<small>Dispatch dead-lettered: {{ a.last_reason }}</small>{% endif %}</td>
+<td data-label="Reference">{{ a.reference or '—' }}</td></tr>{% endfor %}
+</tbody></table></div>{% else %}<p>Dispatch waits for the open issue to be resolved.</p>{% endif %}</details>
+<details id="receipts"><summary>Callback receipts</summary><p>Every signed provider event is recorded once. Replays increase the receipt count without a business effect.</p>
+{% if data.receipts %}<div class="scroll"><table class="responsive"><thead><tr><th>Received</th><th>Provider event</th><th>Reported</th><th>Disposition</th><th>Receipts</th>{% if demo %}<th>Demo</th>{% endif %}</tr></thead><tbody>
+{% for r in data.receipts %}<tr><td data-label="Received">{{ r.received_at|clock }}</td><td data-label="Event"><strong>{{ r.provider }}</strong><small>Event {{ r.event_id[:8] }} · attempt {{ r.attempt_id[:8] }}</small></td>
+<td data-label="Reported">{{ r.outcome }}</td><td data-label="Disposition"><span class="pill d-{{ r.disposition }}">{{ r.disposition|replace('_',' ') }}</span></td><td data-label="Receipts">{{ r.receipts }}</td>
+{% if demo %}<td data-label="Demo"><button class="secondary control" data-url="/sim/control/replay" data-body='{{ {"event_id": r.event_id, "mode": "identical"}|tojson }}'>Replay identical</button>
+<button class="secondary control" data-url="/sim/control/replay" data-body='{{ {"event_id": r.event_id, "mode": "new-event"}|tojson }}'>Resend as new event</button></td>{% endif %}</tr>{% endfor %}
+</tbody></table></div>{% else %}<p>No provider callback has arrived yet.</p>{% endif %}
+{% if demo %}{% for a in data.attempts %}{% for d in console.get(a.id, []) %}{% if d.status == 'HELD' and d.kind == 'PRIMARY' and a.status == 'SENT' %}
+<div class="line"><span>{{ a.kind }} attempt {{ a.generation }} reply is held by the simulator</span><button class="secondary control" data-url="/sim/control/release" data-body='{{ {"attempt_id": a.id}|tojson }}'>Release held callback</button></div>
+{% endif %}{% endfor %}{% endfor %}{% endif %}</details>
+{% if data.approval %}<details id="approval"><summary>Approval receipt</summary>
+<p>Approved {{ data.approval.at|utc }} under policy v{{ data.approval.receipt.policy.version }} · Data revision {{ data.approval.receipt.evidence.data_revision }}</p>
+<div class="scroll"><table class="responsive"><thead><tr><th>Required check</th><th>Winning attempt</th><th>Decision basis</th></tr></thead><tbody>
+{% for w in data.approval.receipt.checks %}<tr><td data-label="Check"><strong>{{ w.kind }}</strong><small>Input revision {{ w.input_revision }}</small></td>
+<td data-label="Attempt">Generation {{ w.generation }}<small class="hash">{{ w.attempt_id }}</small></td><td data-label="Basis">{{ w.status }} · {{ w.reason_code }}
+{% if w.acceptance %}<small>Accepted by {{ w.acceptance.actor }} · {{ w.acceptance.reason }} · issue {{ w.acceptance.issue_id }} v{{ w.acceptance.issue_version }}</small>{% endif %}</td></tr>{% endfor %}
+</tbody></table></div>
+{% for clearance in data.approval.receipt.risk_clearances %}<p>Risk change cleared by {{ clearance.actor }} · {{ clearance.reason }} · input revision {{ clearance.subject_revision }}</p>{% endfor %}
+<h3>Evidence revisions and receipt digest</h3>
+{% for kind, doc in data.approval.receipt.evidence.documents.items() %}<p>{{ kind|title }} · revision {{ doc.revision }}<small class="hash">{{ doc.digest }}</small></p>{% endfor %}
+<p>Field assessment <small class="hash">{{ data.approval.receipt.evidence.assessment_digest }}</small></p>
+<p>Receipt SHA-256 <small class="hash">{{ data.approval.digest }}</small></p>
+<h3>Merchant ID issuance record</h3>
+<p>Operation key <code class="hash">{{ data.issuance.key }}</code>{% if data.issuance.reason %}<small>{{ data.issuance.reason }}</small>{% endif %} · {{ data.issuance.claims }} of 3 delivery claims this cycle</p>
+{% if issuer_count is not none %}<p>Approval records <strong>1</strong> · Simulated issuer MIDs <strong>{{ issuer_count }}</strong> · Local MIDs <strong>{{ 1 if data.mid else 0 }}</strong></p>{% endif %}</details>{% endif %}
+<details id="history"><summary>Case history ({{ data.events|length }} events)</summary><ol class="history">{% for e in data.events %}<li class="k-{{ e.event|ek(e.actor) }}"><time>{{ e.at|clock }}</time><span><strong>{{ e.event|replace('_',' ')|title }}</strong> · {{ e.detail }}{% if e.actor != 'system' %} <small>{{ e.actor }}</small>{% endif %}</span></li>{% endfor %}</ol></details>
+</section>
+</div><aside class="case-side">
+{% if not operator %}{{ progress(true) }}{% endif %}
+<section class="panel mid-card" id="issuance"><div class="section-line"><h2>Merchant ID</h2>{% if not data.approval %}<span class="tag">{{ "Closed" if data.state == "REJECTED" else "Pending" }}</span>{% endif %}</div>
+{% if data.approval %}
+{% if data.mid %}<div class="mid"><span class="label">Simulated Merchant ID</span><code id="mid-value">{{ data.mid }}</code><button type="button" class="secondary" data-copy="mid-value">Copy</button></div>{% else %}<p>The application is approved. The Merchant ID is being issued by the simulated issuer; it is never created twice.</p>{% endif %}
+<p><span class="state s-{{ 'ACTIVE' if data.mid else ('PROVISIONING_FAILED' if data.issuance.status == 'DEAD_LETTERED' else 'APPROVED_PENDING_MID') }}">{{ data.issuance.status }}</span>
+{% if data.issuance.status == 'OUTCOME_UNKNOWN' %} · confirming the original issuance with the issuer{% endif %}
+{% if data.issuance.status in ['RETRY_SCHEDULED','OUTCOME_UNKNOWN','QUEUED'] %} · due {{ data.issuance.due|utc }}{% endif %}
+{% if data.issuance.status == 'DEAD_LETTERED' %} · issuing failed three times and now needs {{ 'you' if operator else 'our operations team' }}{% endif %}</p>
+{% if operator and data.issuance.status == 'DEAD_LETTERED' %}
+<div class="decisions">{{ decision_form('/api/cases/' ~ data.id ~ '/issuance/requeue', 'REQUEUE_MID', {'cycle': data.issuance.cycle}, labels, reasons) }}</div>
+{% endif %}
+{% else %}<strong class="mid-pending">{{ "Application closed" if data.state == "REJECTED" else "Not issued yet" }}</strong>
+<p>{% if data.state == 'REJECTED' %}No Merchant ID: the application was rejected.{% else %}Your Merchant ID is issued once all required checks qualify and approval is recorded.{% endif %}</p>
+{% endif %}</section>
+<div id="documents">{% if data.extractions %}<section class="panel" id="uploaded"><div class="section-line"><h2>Uploaded documents</h2><span class="tag">OCR evidence</span></div>
+<div class="evidence-previews">{% for kind, ex in data.extractions.items() %}<figure class="docfig"><a href="/cases/{{ data.id }}/documents/{{ kind }}/image"><img class="doc-thumb" loading="lazy" src="/cases/{{ data.id }}/documents/{{ kind }}/image" alt="Normalized {{ kind }} document as read by the OCR engine"></a>
+<figcaption><strong>{{ kind|title }}</strong> · revision {{ ex.revision }}<small>{{ ex.source_type }} · {{ ex.engine }} · minimum confidence {{ ex.min_confidence }} (threshold {{ ex.threshold }})</small></figcaption></figure>{% endfor %}</div></section>{% endif %}
+
+<section class="panel"><h2>Document evidence</h2>
+<ul class="doc-list">{% for d in view.documents %}<li><div><strong>{{ d.title }}</strong><small>{{ d.note }}</small></div><span class="chip chip-{{ {'ok': 'ok', 'info': 'run', 'wait': 'wait'}[d.tone] }}">{{ d.label }}</span></li>{% endfor %}</ul>
+</section>
+<section class="panel"><h2>Application details</h2>
+<dl class="kv"><dt>Business name</dt><dd>{{ M.name }}</dd><dt>PAN</dt><dd>{{ M.pan|masked }}</dd><dt>GST number</dt><dd>{{ M.gst|masked }}</dd>
+<dt>Bank account</dt><dd>{{ M.account|masked }}</dd><dt>Routing code</dt><dd>{{ M.routing|masked }}</dd><dt>Category</dt><dd>{{ M.category|title }}</dd><dt>Postal zone</dt><dd>{{ M.zone }}</dd>
+{% if data.events %}<dt>Submitted</dt><dd title="{{ data.events[0].at|utc }}">{{ data.events[0].at|ago }}</dd>{% endif %}</dl></section>
+</div></aside></div>
+{% if operator %}<p class="case-summary">{{ view.summary.headline }}. {{ view.summary.detail }}</p>{% endif %}
+{% endblock %}

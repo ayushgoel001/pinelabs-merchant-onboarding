@@ -1,0 +1,24 @@
+{#- One operator decision. The server still validates the action, the issue version and the reason; this only presents it. -#}
+{% set EXPLAIN = {
+  'ACCEPT_REFERRAL': 'Qualify the referred check. The reason is sealed on the approval receipt.',
+  'ACCEPT_BENEFICIARY_MATCH': 'Accept the registered beneficiary name as the same business.',
+  'ACCEPT_EXTRACTION': 'Use the value read from the document despite its low OCR confidence.',
+  'CLEAR_RISK_CHANGE': 'Confirm the changed risk inputs are corroborated and let the risk check proceed.',
+  'AUTHORIZE_RECOVERY': 'Send one more request to the provider after a transport fault.',
+  'DISMISS_DUPLICATE': 'Record that the matched application is a separate business.',
+  'REPAIR_DISPATCH': 'Create the missing provider request so verification can continue.',
+  'REQUEST_CORRECTION': 'Ask the merchant for replacement evidence. The case returns to the merchant.',
+  'REJECT': 'Reject the application. This is final and cannot be undone.',
+  'REQUEUE_MID': 'Send the dead-lettered issuance again with the same operation key.'} %}
+{% macro decision_form(url, action, precondition, labels, reasons) %}
+{% set kind = 'reject' if action == 'REJECT' else ('request' if action == 'REQUEST_CORRECTION' else 'accept') %}
+<form class="decision" data-url="{{ url }}" data-command='{{ precondition|tojson }}' data-kind="{{ kind }}" data-action="{{ action }}" data-label="{{ labels[action] }}">
+  <label><span class="sr-only">{{ labels[action] }}. {{ EXPLAIN[action] }}</span>
+    <select name="reason" required aria-label="Reason to {{ labels[action]|lower }}">
+      <option value="">Choose a reason</option>{% for reason in reasons[action] %}<option>{{ reason }}</option>{% endfor %}
+    </select>
+  </label>
+  <button type="submit" class="{{ 'danger' if kind == 'reject' else ('primary' if kind == 'accept' else 'secondary') }}">{{ labels[action] }}</button>
+  <span role="alert" class="error"></span>
+</form>
+{% endmacro %}

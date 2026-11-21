@@ -1,0 +1,1 @@
+{"version": 1, "required": ["PAN", "GST", "BANK", "RISK"], "referral_kinds": ["RISK"]}

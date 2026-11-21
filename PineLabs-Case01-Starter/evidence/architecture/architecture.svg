@@ -1,0 +1,210 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+<title>Pine Labs merchant onboarding · system architecture (Case Study 01)</title>
+<defs>
+  <filter id="shadow" x="-8%" y="-8%" width="116%" height="124%"><feDropShadow dx="0" dy="8" stdDeviation="11" flood-color="#0E1A3A" flood-opacity="0.07"/></filter>
+  <linearGradient id="navyPanel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16244D"/><stop offset="1" stop-color="#0E1A3A"/></linearGradient>
+  <radialGradient id="glow" cx="0.85" cy="0" r="0.9"><stop offset="0" stop-color="#ECE9FF"/><stop offset="0.55" stop-color="#F5F6FA" stop-opacity="0"/></radialGradient>
+  <marker id="m-navy" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1C2B57"/></marker>
+  <marker id="m-navy-start" viewBox="0 0 10 10" refX="1.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10 0L0 5L10 10z" fill="#1C2B57"/></marker>
+  <marker id="m-violet" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6D5DF5"/></marker>
+  <marker id="m-amber" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#D27A1F"/></marker>
+  <marker id="m-amber-start" viewBox="0 0 10 10" refX="1.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10 0L0 5L10 10z" fill="#D27A1F"/></marker>
+  <marker id="m-green" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1E9A68"/></marker>
+</defs>
+<rect width="1920" height="1080" fill="#F5F6FA"/>
+<rect width="1920" height="1080" fill="url(#glow)"/>
+<svg x="80" y="46" width="116" height="40" viewBox="0 0 168 58"><path d="M47.3697 17.2773C47.1841 17.2773 47.0603 17.2773 46.8747 17.2773C44.6473 17.2773 42.6674 18.0216 41.3681 18.9519L41.3063 18.8899V17.7735H36.1709V40.1015H40.5638H41.3063V23.4175C42.4818 22.5492 44.0286 21.867 45.8229 21.867C46.1941 21.867 46.6272 21.867 46.9985 21.991C49.5352 22.6112 50.4633 24.72 50.4633 26.8908V40.0394H55.5987V25.9604C55.5987 23.1074 54.7943 20.8126 53 19.3241C51.3914 18.0836 49.4733 17.3394 47.3697 17.2773Z" fill="#003434"/><path d="M27.218 17.7114V40.0393H32.3533V17.7114H27.218Z" fill="#003434"/><path d="M69.0314 17.2167C63.2155 17.2167 58.142 21.8684 58.142 28.9389C58.142 29.7452 58.2038 30.4895 58.3276 31.2337C58.3895 31.4818 58.4513 31.7919 58.5132 32.04C58.5132 32.102 58.5751 32.2261 58.5751 32.2881C58.5751 32.3501 58.6369 32.4742 58.6369 32.5362C58.6988 32.7843 58.7607 32.9704 58.8226 33.1564C60.3694 37.7461 64.4529 40.537 69.0314 40.537C69.1552 40.537 69.3408 40.537 69.4645 40.537C72.9912 40.413 76.2085 38.5523 77.8172 35.1411C78.0647 34.6449 78.2503 34.1488 78.3741 33.6526H77.8791H77.5697H73.7955C72.62 35.6373 70.3307 36.3816 68.1652 36.0094C65.6903 35.5753 64.1435 33.6526 63.7104 31.2337C63.6486 30.9236 63.5867 30.6755 63.5867 30.3654H79.364C79.4259 29.8072 79.4877 28.8769 79.4877 28.1326C79.4259 21.0001 74.3524 17.2167 69.0314 17.2167ZM63.5248 26.5821C64.2054 23.2329 66.6184 21.6823 69.0314 21.6823C71.4444 21.6823 74.1668 23.2329 74.538 26.5821H63.5248Z" fill="#003434"/><path d="M12.7758 17.7114C10.734 17.7114 9.00157 17.7114 7.45477 17.7114H3V49.4667H8.25911V38.9229L8.32098 38.8609C9.68216 39.7912 11.6621 40.5355 13.9513 40.5355C19.5198 40.5355 24.1602 36.0699 24.1602 29.2475C24.222 22.239 19.396 17.7114 12.7758 17.7114ZM12.8376 35.8218C11.0433 35.8218 9.43467 35.1396 8.25911 34.2092V22.301H12.652C16.6118 22.301 18.9629 25.03 18.9629 28.9374C18.9011 32.8448 16.6118 35.8218 12.8376 35.8218Z" fill="#003434"/><path d="M134.491 17.2164C132.263 17.2164 130.283 17.9606 128.984 18.8289L128.922 18.7669V8.53326H123.787V40.0405H128.18C129.726 40.0405 131.397 40.0405 133.377 40.0405C139.811 40.0405 144.514 35.1407 144.514 28.2563C144.514 21.6199 139.935 17.2164 134.491 17.2164ZM133.191 35.5749H128.922V23.4186C130.098 22.5503 131.644 21.868 133.439 21.868C137.151 21.868 139.378 24.783 139.378 28.5664C139.317 32.4118 137.027 35.5749 133.191 35.5749Z" fill="#003434"/><path d="M157.77 26.6445C154.676 25.9622 152.016 26.0242 152.016 23.9155C152.016 22.3649 153.439 21.6827 155.666 21.6827C157.77 21.6827 160.863 22.427 163.4 23.9775V18.9537C161.173 17.7133 158.203 17.1551 155.666 17.1551C150.654 17.1551 146.88 19.636 146.818 24.2876C146.818 28.3191 149.541 29.8076 153.501 30.7379C156.656 31.4822 159.378 31.3582 159.378 33.5909C159.378 35.2655 157.893 36.0098 155.542 36.0098C153.253 36.0098 150.098 35.2655 147.437 33.5289V38.6768C149.788 39.9172 152.882 40.5374 155.48 40.5374C160.368 40.5374 164.576 38.2426 164.576 33.1568C164.576 28.9393 161.73 27.5748 157.77 26.6445Z" fill="#003434"/><path d="M114.871 18.8263L114.809 18.8883C111.592 16.7175 108.127 17.3377 108.127 17.3377C102.064 18.2061 99.0322 23.726 98.7228 27.7575C98.4753 31.1687 99.3415 36.5646 104.972 39.5417C108.808 41.5884 112.83 40.1619 114.809 38.9214C114.871 38.9214 114.871 38.9835 114.871 38.9835V40.0999H120.007V17.7099H114.871V18.8263ZM114.871 34.3938C113.015 35.6343 111.345 36.0684 109.86 35.8824C105.219 35.3862 104.601 31.2307 104.477 30.2383C104.229 28.1296 104.415 24.2842 107.447 22.6096C111.221 20.5009 114.871 23.4159 114.871 23.4159V34.3938Z" fill="#003434"/><path d="M94.3268 34.7066V8.53326H89.1915V34.8926V34.9547C89.1915 39.6683 92.4707 40.0405 93.5225 40.0405H97.7916V35.5749H94.3887" fill="#003434"/><path d="M27.218 12.4361L30.8684 8.77679H36.0656V13.9246L32.4152 17.646V12.4361H27.218Z" fill="#003434"/></svg>
+<line x1="222" y1="48" x2="222" y2="86" stroke="#E3E6EF" stroke-width="2"/>
+<text x="246" y="78" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="34" letter-spacing="-0.5"><tspan font-weight="750" fill="#0E1A3A">Merchant Onboarding Platform</tspan><tspan font-weight="500" fill="#6D5DF5"> · System architecture</tspan></text>
+<text x="80" y="128" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">FastAPI  ·  Jinja2  ·  SQLite (WAL)  ·  Tesseract OCR  ·  separate worker process  ·  simulated providers and issuer</text>
+<rect x="1632" y="54" width="208" height="38" rx="19" fill="#FFFFFF" stroke="#D6D1FF" stroke-width="1.5"/>
+<text x="1736" y="79" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700" fill="#6D5DF5" text-anchor="middle" letter-spacing="0">Case Study 01 · Demo</text>
+<rect x="80" y="200" width="280" height="270" rx="20" fill="#FFFFFF" stroke="#E3E6EF" stroke-width="1.5" filter="url(#shadow)"/>
+<rect x="104" y="224" width="52" height="52" rx="14" fill="#EFEDFF"/>
+<g transform="translate(106,226)" fill="none" stroke="#6D5DF5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 21h22v14H13z"/><path d="M11 21l3-8h20l3 8"/><path d="M21 35v-7h6v7"/></g>
+<text x="104" y="312" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="25" font-weight="750" fill="#0E1A3A" text-anchor="start" letter-spacing="0">Merchant</text>
+<text x="104" y="338" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">Browser · no account</text>
+<circle cx="110" cy="382" r="3.5" fill="#6D5DF5"/>
+<text x="124" y="388" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#101828" text-anchor="start" letter-spacing="0">Applies, uploads files</text>
+<circle cx="110" cy="412" r="3.5" fill="#6D5DF5"/>
+<text x="124" y="418" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#101828" text-anchor="start" letter-spacing="0">Tracks status &amp; fixes</text>
+<circle cx="110" cy="442" r="3.5" fill="#6D5DF5"/>
+<text x="124" y="448" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#101828" text-anchor="start" letter-spacing="0">Sees Merchant ID</text>
+<rect x="80" y="510" width="280" height="350" rx="20" fill="#FFFFFF" stroke="#E3E6EF" stroke-width="1.5" filter="url(#shadow)"/>
+<rect x="104" y="534" width="52" height="52" rx="14" fill="#EFEDFF"/>
+<g transform="translate(106,536)" fill="none" stroke="#6D5DF5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="18" r="6"/><path d="M13 36c1.5-7 6-9.5 11-9.5S33.5 29 35 36"/></g>
+<text x="104" y="622" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="25" font-weight="750" fill="#0E1A3A" text-anchor="start" letter-spacing="0">Operator</text>
+<text x="104" y="648" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">One-time link → signed cookie</text>
+<circle cx="110" cy="692" r="3.5" fill="#D27A1F"/>
+<text x="124" y="698" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#101828" text-anchor="start" letter-spacing="0">Review queue</text>
+<circle cx="110" cy="722" r="3.5" fill="#D27A1F"/>
+<text x="124" y="728" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#101828" text-anchor="start" letter-spacing="0">Reasoned decisions</text>
+<circle cx="110" cy="752" r="3.5" fill="#D27A1F"/>
+<text x="124" y="758" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#101828" text-anchor="start" letter-spacing="0">Two-step rejection</text>
+<circle cx="110" cy="782" r="3.5" fill="#D27A1F"/>
+<text x="124" y="788" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#101828" text-anchor="start" letter-spacing="0">Requeue issuance</text>
+<rect x="104" y="812" width="232" height="30" rx="15" fill="#FFF3E3"/>
+<text x="220" y="832" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="700" fill="#D27A1F" text-anchor="middle" letter-spacing="0">Human-in-the-loop</text>
+<rect x="416" y="200" width="320" height="660" rx="20" fill="#FFFFFF" stroke="#E3E6EF" stroke-width="1.5" filter="url(#shadow)"/>
+<rect x="440" y="224" width="52" height="52" rx="14" fill="#EFEDFF"/>
+<g transform="translate(442,226)" fill="none" stroke="#6D5DF5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="11" y="13" width="26" height="22" rx="3"/><path d="M11 19h26"/><path d="M16 26h8M16 30h12"/></g>
+<text x="508" y="248" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="24" font-weight="750" fill="#0E1A3A" text-anchor="start" letter-spacing="0">FastAPI web app</text>
+<text x="508" y="272" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">Jinja2 UI · REST API</text>
+<rect x="440" y="310" width="272" height="50" rx="12" fill="#F6F7FB" stroke="#E3E6EF" stroke-width="1.2"/>
+<circle cx="460" cy="335.0" r="5.5" fill="#6D5DF5"/>
+<text x="476" y="341.12" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#101828" text-anchor="start" letter-spacing="0">Intake &amp; uploads</text>
+<rect x="440" y="374" width="272" height="50" rx="12" fill="#F6F7FB" stroke="#E3E6EF" stroke-width="1.2"/>
+<text x="458" y="405.12" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#101828" text-anchor="start" letter-spacing="0">Tracking &amp; corrections</text>
+<rect x="440" y="438" width="272" height="50" rx="12" fill="#F6F7FB" stroke="#E3E6EF" stroke-width="1.2"/>
+<circle cx="460" cy="463.0" r="5.5" fill="#6D5DF5"/>
+<text x="476" y="469.12" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#101828" text-anchor="start" letter-spacing="0">Signed callback inbox</text>
+<rect x="440" y="502" width="272" height="50" rx="12" fill="#F6F7FB" stroke="#E3E6EF" stroke-width="1.2"/>
+<circle cx="460" cy="527.0" r="5.5" fill="#D27A1F"/>
+<text x="476" y="533.12" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#101828" text-anchor="start" letter-spacing="0">Operator decisions</text>
+<rect x="440" y="566" width="272" height="50" rx="12" fill="#F6F7FB" stroke="#E3E6EF" stroke-width="1.2"/>
+<text x="458" y="597.12" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#101828" text-anchor="start" letter-spacing="0">Metrics &amp; audit</text>
+<line x1="440" y1="650" x2="712" y2="650" stroke="#E3E6EF" stroke-width="1.5"/>
+<text x="440" y="686" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">Role cookies · origin checks</text>
+<text x="440" y="716" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">Idempotent submission keys</text>
+<text x="440" y="746" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">2 MiB file limit · type checks</text>
+<rect x="440" y="790" width="272" height="44" rx="12" fill="#EFEDFF"/>
+<text x="576" y="818" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="700" fill="#6D5DF5" text-anchor="middle" letter-spacing="0">Uvicorn · Python 3.11</text>
+<rect x="800" y="200" width="370" height="410" rx="20" fill="url(#navyPanel)" stroke="#0E1A3A" stroke-width="1.5" filter="url(#shadow)"/>
+<rect x="824" y="224" width="52" height="52" rx="14" fill="#FFFFFF1F"/>
+<g transform="translate(826,226)" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="16" r="3.5"/><circle cx="33" cy="16" r="3.5"/><circle cx="24" cy="33" r="3.5"/><path d="M18.5 16h11M16.5 19.5l6 10M31.5 19.5l-6 10"/></g>
+<text x="892" y="248" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="24" font-weight="750" fill="#FFFFFF" text-anchor="start" letter-spacing="0">Workflow engine</text>
+<text x="892" y="272" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#B9C2E0" text-anchor="start" letter-spacing="0">State machine · one writer</text>
+<rect x="824" y="296" width="322" height="50" rx="12" fill="#FFFFFF14" stroke="#FFFFFF2E" stroke-width="1.2"/>
+<text x="842" y="327.12" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#FFFFFF" text-anchor="start" letter-spacing="0">Evidence vs. application</text>
+<rect x="824" y="356" width="322" height="50" rx="12" fill="#FFFFFF14" stroke="#FFFFFF2E" stroke-width="1.2"/>
+<text x="842" y="387.12" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#FFFFFF" text-anchor="start" letter-spacing="0">Duplicate &amp; risk holds</text>
+<rect x="824" y="416" width="322" height="50" rx="12" fill="#FFFFFF14" stroke="#FFFFFF2E" stroke-width="1.2"/>
+<text x="842" y="447.12" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#FFFFFF" text-anchor="start" letter-spacing="0">Upload hold until read</text>
+<rect x="824" y="476" width="322" height="50" rx="12" fill="#FFFFFF14" stroke="#FFFFFF2E" stroke-width="1.2"/>
+<circle cx="844" cy="501.0" r="5.5" fill="#D27A1F"/>
+<text x="860" y="507.12" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#FFFFFF" text-anchor="start" letter-spacing="0">Human review queue</text>
+<rect x="824" y="536" width="322" height="50" rx="12" fill="#FFFFFF14" stroke="#FFFFFF2E" stroke-width="1.2"/>
+<circle cx="844" cy="561.0" r="5.5" fill="#4FD1A1"/>
+<text x="860" y="567.12" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#FFFFFF" text-anchor="start" letter-spacing="0">Approval gate · sealed receipt</text>
+<rect x="800" y="650" width="370" height="210" rx="20" fill="#FFFFFF" stroke="#E3E6EF" stroke-width="1.5" filter="url(#shadow)"/>
+<rect x="824" y="674" width="52" height="52" rx="14" fill="#EFEDFF"/>
+<g transform="translate(826,676)" fill="none" stroke="#6D5DF5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 11h11l6 6v20H16z"/><path d="M27 11v6h6"/><path d="M20 24h9M20 29h9"/></g>
+<text x="892" y="698" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="24" font-weight="750" fill="#0E1A3A" text-anchor="start" letter-spacing="0">OCR pipeline</text>
+<text x="892" y="722" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">Tesseract 5 · pypdfium2 · Pillow</text>
+<rect x="824" y="752" width="100" height="36" rx="10" fill="#F6F7FB" stroke="#E3E6EF" stroke-width="1.2"/>
+<text x="874" y="776" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="650" fill="#101828" text-anchor="middle" letter-spacing="0">Identity</text>
+<rect x="934" y="752" width="100" height="36" rx="10" fill="#F6F7FB" stroke="#E3E6EF" stroke-width="1.2"/>
+<text x="984" y="776" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="650" fill="#101828" text-anchor="middle" letter-spacing="0">Tax (GST)</text>
+<rect x="1044" y="752" width="100" height="36" rx="10" fill="#F6F7FB" stroke="#E3E6EF" stroke-width="1.2"/>
+<text x="1094" y="776" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="650" fill="#101828" text-anchor="middle" letter-spacing="0">Bank</text>
+<text x="824" y="826" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="600" fill="#D27A1F" text-anchor="start" letter-spacing="0">Confidence below 50 → operator review</text>
+<g filter="url(#shadow)"><path d="M1234 232 a145 30 0 0 1 290 0 v268 a145 30 0 0 1 -290 0 z" fill="#FFFFFF" stroke="#E3E6EF" stroke-width="1.5"/><ellipse cx="1379" cy="232" rx="145" ry="30" fill="#EFEDFF" stroke="#D6D1FF" stroke-width="1.5"/></g>
+<rect x="1258" y="280" width="52" height="52" rx="14" fill="#EFEDFF"/>
+<g transform="translate(1260,282)" fill="none" stroke="#6D5DF5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="24" cy="15" rx="10" ry="4"/><path d="M14 15v18c0 2.2 4.5 4 10 4s10-1.8 10-4V15"/><path d="M14 24c0 2.2 4.5 4 10 4s10-1.8 10-4"/></g>
+<text x="1324" y="304" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="24" font-weight="750" fill="#0E1A3A" text-anchor="start" letter-spacing="0">SQLite · WAL</text>
+<text x="1324" y="328" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">Durable state</text>
+<circle cx="1264" cy="378" r="3.5" fill="#6D5DF5"/>
+<text x="1278" y="384" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#101828" text-anchor="start" letter-spacing="0">Cases &amp; documents</text>
+<circle cx="1264" cy="410" r="3.5" fill="#6D5DF5"/>
+<text x="1278" y="416" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#101828" text-anchor="start" letter-spacing="0">Attempts &amp; callbacks</text>
+<circle cx="1264" cy="442" r="3.5" fill="#6D5DF5"/>
+<text x="1278" y="448" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#101828" text-anchor="start" letter-spacing="0">Decisions &amp; receipts</text>
+<circle cx="1264" cy="474" r="3.5" fill="#6D5DF5"/>
+<text x="1278" y="480" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#101828" text-anchor="start" letter-spacing="0">Append-only audit log</text>
+<rect x="1234" y="570" width="290" height="290" rx="20" fill="#FFFFFF" stroke="#E3E6EF" stroke-width="1.5" filter="url(#shadow)"/>
+<rect x="1258" y="594" width="52" height="52" rx="14" fill="#EFEDFF"/>
+<g transform="translate(1260,596)" fill="none" stroke="#6D5DF5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M34 20a11 11 0 0 0-19-4"/><path d="M14 11v6h6"/><path d="M14 28a11 11 0 0 0 19 4"/><path d="M34 37v-6h-6"/></g>
+<text x="1324" y="618" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="19.5" font-weight="750" fill="#0E1A3A" text-anchor="start" letter-spacing="0">Background worker</text>
+<text x="1324" y="642" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">Separate process</text>
+<rect x="1258" y="670" width="242" height="38" rx="10" fill="#F6F7FB" stroke="#E3E6EF" stroke-width="1.2"/>
+<text x="1274" y="695" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="600" fill="#101828" text-anchor="start" letter-spacing="0">Dispatch with leases</text>
+<rect x="1258" y="716" width="242" height="38" rx="10" fill="#F6F7FB" stroke="#E3E6EF" stroke-width="1.2"/>
+<text x="1274" y="741" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="600" fill="#101828" text-anchor="start" letter-spacing="0">10 s deadlines</text>
+<rect x="1258" y="762" width="242" height="38" rx="10" fill="#F6F7FB" stroke="#E3E6EF" stroke-width="1.2"/>
+<text x="1274" y="787" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="600" fill="#101828" text-anchor="start" letter-spacing="0">Retry 2 s · 5 s</text>
+<rect x="1258" y="808" width="242" height="38" rx="10" fill="#F6F7FB" stroke="#E3E6EF" stroke-width="1.2"/>
+<text x="1274" y="833" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="600" fill="#101828" text-anchor="start" letter-spacing="0">Dead letter → requeue</text>
+<rect x="1580" y="200" width="260" height="380" rx="20" fill="#FFFFFF" stroke="#E3E6EF" stroke-width="1.5" filter="url(#shadow)"/>
+<rect x="1604" y="224" width="52" height="52" rx="14" fill="#EFEDFF"/>
+<g transform="translate(1606,226)" fill="none" stroke="#6D5DF5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M24 11l11 4v8c0 7-5 11.5-11 14-6-2.5-11-7-11-14v-8z"/><path d="M19 24l4 4 7-8"/></g>
+<text x="1604" y="312" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="23" font-weight="750" fill="#0E1A3A" text-anchor="start" letter-spacing="0">Verification</text>
+<text x="1604" y="340" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#0E1A3A" text-anchor="start" letter-spacing="0">providers (simulated)</text>
+<rect x="1604" y="362" width="100" height="48" rx="12" fill="#EFEDFF" stroke="#D6D1FF" stroke-width="1.2"/>
+<text x="1654" y="393" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="800" fill="#0E1A3A" text-anchor="middle" letter-spacing="0.5">PAN</text>
+<rect x="1716" y="362" width="100" height="48" rx="12" fill="#EFEDFF" stroke="#D6D1FF" stroke-width="1.2"/>
+<text x="1766" y="393" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="800" fill="#0E1A3A" text-anchor="middle" letter-spacing="0.5">GST</text>
+<rect x="1604" y="422" width="100" height="48" rx="12" fill="#EFEDFF" stroke="#D6D1FF" stroke-width="1.2"/>
+<text x="1654" y="453" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="800" fill="#0E1A3A" text-anchor="middle" letter-spacing="0.5">BANK</text>
+<rect x="1716" y="422" width="100" height="48" rx="12" fill="#EFEDFF" stroke="#D6D1FF" stroke-width="1.2"/>
+<text x="1766" y="453" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="800" fill="#0E1A3A" text-anchor="middle" letter-spacing="0.5">RISK</text>
+<text x="1604" y="512" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="600" fill="#6D5DF5" text-anchor="start" letter-spacing="0">HMAC-signed callbacks</text>
+<text x="1604" y="538" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">Late · duplicate · transient</text>
+<rect x="1580" y="620" width="260" height="240" rx="20" fill="#FFFFFF" stroke="#E3E6EF" stroke-width="1.5" filter="url(#shadow)"/>
+<rect x="1604" y="644" width="52" height="52" rx="14" fill="#EFEDFF"/>
+<g transform="translate(1606,646)" fill="none" stroke="#6D5DF5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="14" width="28" height="20" rx="3"/><circle cx="18" cy="23" r="3"/><path d="M15 30c1-2.5 5-2.5 6 0M25 21h8M25 26h6"/></g>
+<text x="1604" y="730" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="21" font-weight="750" fill="#0E1A3A" text-anchor="start" letter-spacing="0">Merchant ID issuer</text>
+<text x="1604" y="756" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">Simulated · idempotent key</text>
+<rect x="1604" y="778" width="212" height="58" rx="12" fill="#E7F6EF" stroke="#BFE5D2" stroke-width="1.2"/>
+<text x="1710" y="803" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="800" fill="#1E9A68" text-anchor="middle" letter-spacing="0">Exactly one MID</text>
+<text x="1710" y="825" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="600" fill="#1E9A68" text-anchor="middle" letter-spacing="0">same key recovers lost replies</text>
+<path d="M360 335 H412" fill="none" stroke="#1C2B57" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#m-navy)"/>
+<circle cx="388" cy="300" r="17" fill="#6D5DF5" stroke="#FFFFFF" stroke-width="3"/>
+<text x="388" y="306" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="0">1</text>
+<path d="M360 527 H412" fill="none" stroke="#D27A1F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-start="url(#m-amber-start)" marker-end="url(#m-amber)"/>
+<circle cx="388" cy="492" r="17" fill="#D27A1F" stroke="#FFFFFF" stroke-width="3"/>
+<text x="388" y="498" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="0">5</text>
+<path d="M736 362 H796" fill="none" stroke="#1C2B57" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#m-navy)"/>
+<path d="M736 755 H796" fill="none" stroke="#1C2B57" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#m-navy)"/>
+<circle cx="766" cy="720" r="17" fill="#6D5DF5" stroke="#FFFFFF" stroke-width="3"/>
+<text x="766" y="726" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="0">2</text>
+<path d="M985 650 V614" fill="none" stroke="#1C2B57" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#m-navy)"/>
+<path d="M1170 405 H1230" fill="none" stroke="#1C2B57" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-start="url(#m-navy-start)" marker-end="url(#m-navy)"/>
+<path d="M1379 534 V566" fill="none" stroke="#1C2B57" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-start="url(#m-navy-start)" marker-end="url(#m-navy)"/>
+<path d="M1524 640 H1552 V470 H1576" fill="none" stroke="#1C2B57" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#m-navy)"/>
+<circle cx="1552" cy="556" r="17" fill="#6D5DF5" stroke="#FFFFFF" stroke-width="3"/>
+<text x="1552" y="562" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="0">3</text>
+<path d="M1710 200 V172 H576 V196" fill="none" stroke="#6D5DF5" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="9 8" marker-end="url(#m-violet)"/>
+<circle cx="1140" cy="172" r="17" fill="#6D5DF5" stroke="#FFFFFF" stroke-width="3"/>
+<text x="1140" y="178" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="0">4</text>
+<text x="1170" y="166" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="700" fill="#6D5DF5" text-anchor="start" letter-spacing="0">Asynchronous signed callbacks</text>
+<path d="M1524 815 H1576" fill="none" stroke="#1E9A68" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#m-green)"/>
+<circle cx="1552" cy="780" r="17" fill="#1E9A68" stroke="#FFFFFF" stroke-width="3"/>
+<text x="1552" y="786" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="0">6</text>
+<rect x="80" y="900" width="1760" height="124" rx="22" fill="#FFFFFF" stroke="#E3E6EF" stroke-width="1.5" filter="url(#shadow)"/>
+<circle cx="126.0" cy="962" r="17" fill="#6D5DF5" stroke="#FFFFFF" stroke-width="3"/>
+<text x="126.0" y="968" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="0">1</text>
+<text x="156.0" y="956" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="19" font-weight="750" fill="#0E1A3A" text-anchor="start" letter-spacing="0">Apply &amp; upload</text>
+<text x="156.0" y="982" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">Form + PNG · JPEG · PDF</text>
+<circle cx="419.3333" cy="962" r="17" fill="#6D5DF5" stroke="#FFFFFF" stroke-width="3"/>
+<text x="419.3333" y="968" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="0">2</text>
+<text x="449.3333" y="956" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="19" font-weight="750" fill="#0E1A3A" text-anchor="start" letter-spacing="0">Read &amp; check</text>
+<text x="449.3333" y="982" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">OCR fields vs. form</text>
+<path d="M367.3333 952 l8 10 -8 10" fill="none" stroke="#C3C8D6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="712.6667" cy="962" r="17" fill="#6D5DF5" stroke="#FFFFFF" stroke-width="3"/>
+<text x="712.6667" y="968" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="0">3</text>
+<text x="742.6667" y="956" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="19" font-weight="750" fill="#0E1A3A" text-anchor="start" letter-spacing="0">Verify in parallel</text>
+<text x="742.6667" y="982" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">PAN · GST · BANK · RISK</text>
+<path d="M660.6667 952 l8 10 -8 10" fill="none" stroke="#C3C8D6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="1006.0" cy="962" r="17" fill="#6D5DF5" stroke="#FFFFFF" stroke-width="3"/>
+<text x="1006.0" y="968" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="0">4</text>
+<text x="1036.0" y="956" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="19" font-weight="750" fill="#0E1A3A" text-anchor="start" letter-spacing="0">Signed callbacks</text>
+<text x="1036.0" y="982" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">Deadlines · retries · dedupe</text>
+<path d="M954.0 952 l8 10 -8 10" fill="none" stroke="#C3C8D6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="1299.3333" cy="962" r="17" fill="#D27A1F" stroke="#FFFFFF" stroke-width="3"/>
+<text x="1299.3333" y="968" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="0">5</text>
+<text x="1329.3333" y="956" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="19" font-weight="750" fill="#0E1A3A" text-anchor="start" letter-spacing="0">Human review</text>
+<text x="1329.3333" y="982" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">Exceptions need a reason</text>
+<path d="M1247.3333 952 l8 10 -8 10" fill="none" stroke="#C3C8D6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="1592.6667" cy="962" r="17" fill="#1E9A68" stroke="#FFFFFF" stroke-width="3"/>
+<text x="1592.6667" y="968" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="0">6</text>
+<text x="1622.6667" y="956" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="19" font-weight="750" fill="#0E1A3A" text-anchor="start" letter-spacing="0">Merchant ID, once</text>
+<text x="1622.6667" y="982" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">Sealed approval · same key</text>
+<path d="M1540.6667 952 l8 10 -8 10" fill="none" stroke="#C3C8D6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="80" y="1058" font-family="'Cascadia Mono', Consolas, 'SF Mono', monospace" font-size="15" font-weight="600" fill="#5B6478" text-anchor="start" letter-spacing="0">States  NEEDS_INFO → VERIFYING ⇄ IN_REVIEW → APPROVED_PENDING_MID → ACTIVE   ·   REJECTED   ·   PROVISIONING_FAILED → requeue</text>
+<line x1="1440" y1="1053" x2="1480" y2="1053" stroke="#1C2B57" stroke-width="2.6"/>
+<text x="1490" y="1058" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">request</text>
+<line x1="1570" y1="1053" x2="1610" y2="1053" stroke="#6D5DF5" stroke-width="2.6" stroke-dasharray="8 6"/>
+<text x="1620" y="1058" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">async callback</text>
+<circle cx="1746" cy="1053" r="6" fill="#D27A1F"/>
+<text x="1760" y="1058" font-family="'Segoe UI', 'Segoe UI Variable Text', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#5B6478" text-anchor="start" letter-spacing="0">human step</text>
+</svg>
